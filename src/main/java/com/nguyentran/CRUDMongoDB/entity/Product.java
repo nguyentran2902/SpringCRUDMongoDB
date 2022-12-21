@@ -1,14 +1,18 @@
-package com.nguyentran.CRUDMongoDB.DTOs;
+package com.nguyentran.CRUDMongoDB.entity;
 
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
+
 import com.nguyentran.CRUDMongoDB.entity.ProductObject.ProdInf;
 
 import lombok.Data;
+import lombok.Generated;
 
 @Data
-public class ProductDTO {
+public class Product {
+	@Id
 	private String _id;
 	private String prodCode;
 	private List<ProdInf> prodInf;

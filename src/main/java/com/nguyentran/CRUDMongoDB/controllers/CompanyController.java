@@ -19,31 +19,44 @@ import com.nguyentran.CRUDMongoDB.DTOs.PersonDTO;
 import com.nguyentran.CRUDMongoDB.services.CompanyService;
 
 @RestController
-@RequestMapping("/company")
+@RequestMapping("/admin/company")
 public class CompanyController {
 
 	@Autowired
 	private CompanyService companyService;
 
+	// get all
 	@GetMapping("getAll")
 	public ResponseEntity<?> getAllCompanies(
 			@RequestParam(value = "pageNo", defaultValue = "1", required = false) int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize) {
 
-		List<CompanyDTO> companyDTOs = companyService.getAllCompanies(pageNo, pageSize);
-		if (companyDTOs.size() > 0)
-			return ResponseEntity.ok(companyDTOs);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Not found any company in data");
+		try {
+			List<CompanyDTO> companyDTOs = companyService.getAllCompanies(pageNo, pageSize);
+			if (companyDTOs != null && companyDTOs.size() > 0)
+				return ResponseEntity.ok(companyDTOs);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Not found any company in data");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e);
+		}
+
 	}
 
 	// 1. Thống kê có bao nhiêu công ty, số lượng nhân viên của mỗi công ty
 	@GetMapping("/countCompanyAndEmployee")
-	public ResponseEntity<?> countCompanyAndEmployee(@RequestParam(value = "pageNo", defaultValue = "1", required = false) int pageNo,
+	public ResponseEntity<?> countCompanyAndEmployee(
+			@RequestParam(value = "pageNo", defaultValue = "1", required = false) int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize) {
-		Document doc = companyService.countCompanyAndEmployee(pageNo, pageSize);
-		if (doc != null)
-			return ResponseEntity.ok(doc);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: get failed");
+
+		try {
+			Document doc = companyService.countCompanyAndEmployee(pageNo, pageSize);
+			if (doc != null)
+				return ResponseEntity.ok(doc);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: get failed");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e);
+		}
+
 	}
 
 	// 2. Thống kê công ty A , vào năm 2022 có bao nhiêu nhân viên vào làm, tổng mức
@@ -64,10 +77,15 @@ public class CompanyController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Not found any company with id = " + id);
 		}
 
-		Document doc = companyService.countEmployeeAndGetSalary(id, year);
-		if (doc != null)
-			return ResponseEntity.ok(doc);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: get failed");
+		try {
+			Document doc = companyService.countEmployeeAndGetSalary(id, year);
+			if (doc != null)
+				return ResponseEntity.ok(doc);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: get failed");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e);
+		}
+
 	}
 
 	// 3. Thống kê tổng số tiền các công ty phải trả cho những người đăng ký vào làm
@@ -78,11 +96,15 @@ public class CompanyController {
 		if (year == null || year < 0) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: invalid year: " + year);
 		}
+		try {
+			Document doc = companyService.GetAllSalaryInCompanyByYear(year);
+			if (doc != null)
+				return ResponseEntity.ok(doc);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: get failed");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e);
+		}
 
-		Document doc = companyService.GetAllSalaryInCompanyByYear(year);
-		if (doc != null)
-			return ResponseEntity.ok(doc);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: get failed");
 	}
 
 	// 4. Thống kê tổng số tiền các công ty IT phải trả cho những
@@ -95,11 +117,15 @@ public class CompanyController {
 		if (yearStart == null || yearStart < 0 || yearEnd == null || yearEnd < 0 || yearStart > yearEnd) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: invalid year");
 		}
+		try {
+			Document doc = companyService.GetAllSalaryInCompanyBetweenYears(yearStart, yearEnd);
+			if (doc != null)
+				return ResponseEntity.ok(doc);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: get failed");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e);
+		}
 
-		Document doc = companyService.GetAllSalaryInCompanyBetweenYears(yearStart, yearEnd);
-		if (doc != null)
-			return ResponseEntity.ok(doc);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: get failed");
 	}
 
 }

@@ -16,6 +16,8 @@ import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -56,6 +58,8 @@ public class CrudMongoDbApplication extends AbstractMongoClientConfiguration {
 		modelMapper.getConfiguration().setSkipNullEnabled(true);
 		return modelMapper;
 	}
+	
+	
 
 //	@Bean
 //	public MappingMongoConverter mappingMongoConverter() {
