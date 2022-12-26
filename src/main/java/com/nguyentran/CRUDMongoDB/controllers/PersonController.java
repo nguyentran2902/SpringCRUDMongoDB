@@ -1,4 +1,4 @@
-package com.nguyentran.CRUDMongoDB.controllers;
+ package com.nguyentran.CRUDMongoDB.controllers;
 
 
 import java.util.List;

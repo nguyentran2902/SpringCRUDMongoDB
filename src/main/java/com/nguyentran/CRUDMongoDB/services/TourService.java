@@ -2,7 +2,7 @@ package com.nguyentran.CRUDMongoDB.services;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import java.util.List;
 
 import org.bson.Document;
@@ -58,22 +58,26 @@ public class TourService {
 		if (tourDocs == null || tourDocs.size() == 0) {
 			return null;
 		}
+		
+		//put list priceTour to hashmap
+		HashMap<String, Document> priceTourMap = new HashMap<String, Document>();
+		for (Document dPriceTour : priceTourDocs) {
+			priceTourMap.put( dPriceTour.get("tourId").toString(), dPriceTour);
+		}
 
 		// 4.put price and curency to list filter tour
 		for (Document dTour : tourDocs) {
-			for (Document dPriceTour : priceTourDocs)
-				if ((dTour.get("_id").toString()).equalsIgnoreCase(dPriceTour.get("tourId").toString())) {
-
-					dTour.replace("_id", dPriceTour.get("tourId"));
+			
+			//get document from tourPrice
+			Document docPriceTour = priceTourMap.get(dTour.get("_id").toString());
+			
+					dTour.replace("_id", docPriceTour.get("tourId"));
 					dTour.put("dateOpen", date);
 					dTour.put("slotInput", numSlot);
 					dTour.put("currency", currency);
 					dTour.put("availablePrice",
-							convertCurency(numSlot, currency, dPriceTour.get("currency"), dPriceTour.get("price")));
-
-				}
+							convertCurency(numSlot, currency, docPriceTour.get("currency"), docPriceTour.get("price")));
 		}
-		
 		
 		return tourDocs;
 

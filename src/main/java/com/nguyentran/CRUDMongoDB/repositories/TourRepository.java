@@ -59,18 +59,18 @@ public class TourRepository {
 	public List<Document> getListDateOpenFilter(String date, List<String> listIdDateOpen) {
 		List<Bson> priceTourPipeline = new ArrayList<Bson>();
 
-//		Bson match2 = new Document("$match",new Document("dateApplyStart",
+//		Bson match = new Document("$match",new Document("dateApplyStart",
 //				new Document("$lte",new Document("$dateFromString",new Document("dateString",date)))
 //				.append("dateApplyEnd", new Document("$gte",new Document("$dateFromString",new Document("dateString",date))))
 //				.append("tourId", new Document("$in",listIdDateOpen))));
 
-		Bson match4 = new Document("$match",
+		Bson match = new Document("$match",
 				new Document("$and",
 						Arrays.asList(new Document("dateApplyStart", new Document("$lte", LocalDate.parse(date))),
 								new Document("dateApplyEnd", new Document("$gte", LocalDate.parse(date))),
 								new Document("tourId", new Document("$in", listIdDateOpen)))));
 
-		priceTourPipeline.add(match4);
+		priceTourPipeline.add(match);
 		List<Document> priceTourDocs = new ArrayList<>();
 		priceTourCollection.aggregate(priceTourPipeline, Document.class).into(priceTourDocs);
 		return priceTourDocs;
@@ -80,7 +80,7 @@ public class TourRepository {
 	public List<Document> getInfosTour(List<ObjectId> listIdPriceTour, Integer numSlot, String lang, int pageNo,
 			int pageSize) {
 		List<Bson> tourPipeline = new ArrayList<Bson>();
-		Bson match3 = new Document("$match", new Document("slot", new Document("$gte", numSlot)).append("_id",
+		Bson match = new Document("$match", new Document("slot", new Document("$gte", numSlot)).append("_id",
 				new Document("$in", listIdPriceTour)));
 		Bson project = new Document("$project",
 				new Document("slot", 1).append("infos",
@@ -91,7 +91,7 @@ public class TourRepository {
 														new Document("$eq", Arrays.asList("$$infosMap.lang", lang)))),
 										new Document("$first", "$infos")))));
 
-		tourPipeline.add(match3);
+		tourPipeline.add(match);
 		tourPipeline.add(project);
 		tourPipeline.add(Aggregates.limit(pageSize));
 		tourPipeline.add(Aggregates.skip((pageNo - 1) * pageSize));

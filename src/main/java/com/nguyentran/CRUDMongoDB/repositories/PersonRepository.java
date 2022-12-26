@@ -75,10 +75,11 @@ public class PersonRepository {
 		return ior.wasAcknowledged();
 	}
 
-	public int deletePerson(String id) {
+	public DeleteResult deletePerson(String id) {
 		Bson filter = Filters.eq("_id", new ObjectId(id));
 		DeleteResult dr = mongoCollection.deleteOne(filter);
-		return (int) dr.getDeletedCount();
+		return  dr;
+
 	}
 
 	public Person updatePerson(PersonDTO pDTO) {
@@ -184,6 +185,7 @@ public class PersonRepository {
 
 	}
 
+	//get Persons By Name And Month
 	public List<Document> getPersonsByNameAndMonth(String name, Integer monthStart, Integer monthEnd, int pageNo, int pageSize) {
 		List<Bson> pipeline = new ArrayList<>();
 

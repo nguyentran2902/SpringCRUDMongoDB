@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.nguyentran.CRUDMongoDB.DTOs.PersonDTO;
 import com.nguyentran.CRUDMongoDB.entity.Person;
@@ -63,9 +64,10 @@ public class PersonService {
 			return 0;
 		}
 
-		int result = personRepository.deletePerson(id);
+		DeleteResult dr = personRepository.deletePerson(id);
 
-		if (result >= 1)
+		//check delete success
+		if (dr.getDeletedCount() >= 1)
 			return 1;
 
 		return 2;
@@ -90,7 +92,11 @@ public class PersonService {
 	
 		List<PersonDTO> personDTOs = personRepository.searchPerson(name, pageNo, pageSize);
 
-		return personDTOs;
+		if(personDTOs !=null || personDTOs.size()>0) {
+			
+			return personDTOs;
+		}
+		return null;
 	}
 
 	// Viết query update thêm 1 language của 1 person
@@ -98,18 +104,21 @@ public class PersonService {
 
 		UpdateResult ur = personRepository.addLanguageforPerson(id, lang);
 
+		//không tìm thấy person nào có id thỏa đk 
 		if (ur.getMatchedCount() == 0) {
 			return 0;
 		}
 
+		//Tìm thấy person nhưng không có update nào đc thực hiện (=> lang is  exist)
 		if (ur.getModifiedCount() == 0) {
 			return 1;
 		}
 
+		//tìm thấy person thỏa đk và có update (thành công)
 		if (ur.getModifiedCount() >= 1) {
 			return 2;
 		}
-
+		
 		return 3;
 	}
 
@@ -117,14 +126,17 @@ public class PersonService {
 
 		UpdateResult ur = personRepository.removeLangOfPerson(id,lang);
 
+		//không tìm thấy person nào có id thỏa đk 
 		if (ur.getMatchedCount() == 0) {
 			return 0;
 		}
 
+		//Tìm thấy person nhưng không có update nào đc thực hiện (=> lang is not exist)
 		if (ur.getModifiedCount() == 0) {
 			return 1;
 		}
 
+		//tìm thấy person thỏa đk và đã thực hiện remove (thành công)
 		if (ur.getModifiedCount() >= 1) {
 			return 2;
 		}
@@ -136,17 +148,21 @@ public class PersonService {
 	public int addInfPerson(String id, Info inf) {
 		
 		UpdateResult ur = personRepository.addInfPerson(id,inf);
+		
+		//không tìm thấy person nào có id thỏa đk 
 		if (ur.getMatchedCount() == 0) {
+			return 0;
+		}
+		//Tìm thấy person nhưng không có update nào đc thực hiện (=> inf is exist)
+		if (ur.getModifiedCount() == 0) {
 			return 1;
 		}
-		if (ur.getModifiedCount() == 0) {
+
+		//tìm thấy person thỏa đk và đã thực hiện add (thành công)
+		if (ur.getModifiedCount() >= 1) {
 			return 2;
 		}
-
-		if (ur.getModifiedCount() >= 1) {
-			return 3;
-		}
-		return 4;
+		return 3;
 	}
 
 	// 6.Xóa 1 info của 1 person (theo loại thẻ và mã thẻ)
@@ -203,6 +219,7 @@ public class PersonService {
 
 		
 		List<Document> docs = personRepository.getPersonsByNameAndMonth(name,monthStart,monthEnd,pageNo,pageSize);
+		
 
 		return docs;
 	}
@@ -219,7 +236,10 @@ public class PersonService {
 		
 		List<Document> docs =  personRepository.getPersonsByCond(pageNo,pageSize);
 		
-		return docs;
+		if(docs!=null || docs.size()>0) {
+			return docs;
+		}
+		return null;
 	}
 
 	// .13
