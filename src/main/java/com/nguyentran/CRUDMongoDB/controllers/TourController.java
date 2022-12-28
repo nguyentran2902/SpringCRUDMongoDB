@@ -1,6 +1,7 @@
 package com.nguyentran.CRUDMongoDB.controllers;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bson.Document;
@@ -32,18 +33,25 @@ public class TourController {
 			throws ParseException {
 
 		// check input
-		if (numSlot == null || numSlot <= 0) {
+		if (numSlot == null || numSlot <= 0 ) {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Error: Invalid input data: numSlot!");
 		}
-
+		HashMap<String, Object> reponse = new HashMap<>();
 		try {
 			// get infos
 			List<Document> infosTour = tourService.getInfosTour(numSlot, lang, date, currency, pageNo, pageSize);
-			if (infosTour != null && infosTour.size() > 0)
-				return ResponseEntity.ok(infosTour);
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Not found any infos tour in data");
+			if (infosTour != null && infosTour.size() > 0) {
+				reponse.put("message", "success");
+				reponse.put("data", infosTour);
+				return ResponseEntity.ok(reponse);
+			}
+			reponse.put("message", "success");
+			reponse.put("data", "Not found any info tour in data");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(reponse);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e);
+			reponse.put("message", "error");
+			reponse.put("data", "Error: " + e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(reponse);
 		}
 
 	}

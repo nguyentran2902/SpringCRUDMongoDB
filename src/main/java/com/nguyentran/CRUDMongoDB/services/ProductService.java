@@ -39,7 +39,7 @@ public class ProductService {
 		return modelMapper.map(p, ProductDTO.class);
 	}
 
-////* Viết query tìm kiếm những product có tên là "productNameEN" + ngôn ngữ là
+	////* Viết query tìm kiếm những product có tên là "productNameEN" + ngôn ngữ là
 	//// "en"
 	public List<ProductDTO> getProductByNameAndLang(String name, String lang, int pageNo, int pageSize) {
 	

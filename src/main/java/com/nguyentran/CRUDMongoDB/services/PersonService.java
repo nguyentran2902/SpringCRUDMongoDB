@@ -109,7 +109,7 @@ public class PersonService {
 			return 0;
 		}
 
-		//Tìm thấy person nhưng không có update nào đc thực hiện (=> lang is  exist)
+		//Tìm thấy person nhưng không có update nào đc thực hiện (=> lang is exist)
 		if (ur.getModifiedCount() == 0) {
 			return 1;
 		}
@@ -153,7 +153,7 @@ public class PersonService {
 		if (ur.getMatchedCount() == 0) {
 			return 0;
 		}
-		//Tìm thấy person nhưng không có update nào đc thực hiện (=> inf is exist)
+		//Tìm thấy person nhưng không có update nào đc thực hiện (=> info is exist)
 		if (ur.getModifiedCount() == 0) {
 			return 1;
 		}
@@ -170,12 +170,13 @@ public class PersonService {
 		
 		UpdateResult ur = personRepository.removeInfOfPerson(id,inf);
 
-
+		//không tìm thấy person nào có id thỏa đk 
 		if (ur.getMatchedCount() == 0)
 			return 0;
+		//Tìm thấy person nhưng không có update nào đc thực hiện (=> info is not exist)
 		if (ur.getModifiedCount() == 0)
 			return 1;
-
+		//tìm thấy person thỏa đk và đã thực hiện remove (thành công)
 		if (ur.getModifiedCount() >= 1)
 			return 2;
 
@@ -186,9 +187,11 @@ public class PersonService {
 	public int updateSexPerson() {
 		
 		UpdateResult ur = personRepository.updateSexPerson();
+		//update faile
 		if (ur.getModifiedCount() == 0)
 			return 0;
 
+		//update success
 		if (ur.getModifiedCount() >= 1)
 			return 1;
 
@@ -199,7 +202,10 @@ public class PersonService {
 	public Document countTotalPhone() {
 		
 		Document d = personRepository.countTotalPhone();
-		return d;
+		if(d!=null ) {
+			return d;
+		}
+		return null;
 	}
 
 	// 10. Viết query get toàn bộ language hiện có trong collection person (kết quả
@@ -208,7 +214,10 @@ public class PersonService {
 
 		
 		List<Document> listD  = personRepository.getAllLang(pageNo,pageSize);
-		return listD;
+		if(listD!=null || listD.size()>0) {
+			return listD;
+		}
+		return null;
 	}
 
 	// 11.Viết query get những person có tên chứa "Nguyễn" và ngày sinh trong khoảng
@@ -221,7 +230,10 @@ public class PersonService {
 		List<Document> docs = personRepository.getPersonsByNameAndMonth(name,monthStart,monthEnd,pageNo,pageSize);
 		
 
-		return docs;
+		if(docs!=null || docs.size()>0) {
+			return docs;
+		}
+		return null;
 	}
 
 	// 12. Viết query get thông tin của toàn bộ person có giới tính là nam +
@@ -247,7 +259,10 @@ public class PersonService {
 		
 		List<Document> docs = personRepository.getPersonsAndCountByCond(pageNo,pageSize);
 
-		return docs;
+		if(docs!=null || docs.size()>0) {
+			return docs;
+		}
+		return null;
 	}
 
 	// 5.update 1 CMND của 1 person thành deactive (ko còn sử dụng nữa)

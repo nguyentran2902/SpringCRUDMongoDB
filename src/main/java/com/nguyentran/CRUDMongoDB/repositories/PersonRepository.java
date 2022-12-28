@@ -56,6 +56,7 @@ public class PersonRepository {
 
 	}
 
+	//get all
 	public void getAllPersons(List<PersonDTO> personDTOs, int pageNo, int pageSize) {
 		List<Bson> pipeline = new ArrayList<Bson>();
 		pipeline.add(Aggregates.limit(pageSize));
@@ -63,18 +64,21 @@ public class PersonRepository {
 		mongoCollection.aggregate(pipeline, PersonDTO.class).into(personDTOs);
 	}
 
+	// get by id
 	public Person getPersonById(String id) {
 		Bson match = Filters.eq("_id", new ObjectId(id));
 		Person p = mongoCollection.find(match).first();
 		return p;
 	}
 
+	//save person
 	public Boolean savePerson(PersonDTO pDTO) {
 		Person p = modelMapper.map(pDTO, Person.class);
 		InsertOneResult ior = mongoCollection.insertOne(p);
 		return ior.wasAcknowledged();
 	}
 
+	//delete person
 	public DeleteResult deletePerson(String id) {
 		Bson filter = Filters.eq("_id", new ObjectId(id));
 		DeleteResult dr = mongoCollection.deleteOne(filter);
@@ -82,12 +86,14 @@ public class PersonRepository {
 
 	}
 
+	//update person
 	public Person updatePerson(PersonDTO pDTO) {
 		Person p = modelMapper.map(pDTO, Person.class);
 		Person pSave = mongoTemplate.save(p);
 		return pSave;
 	}
 
+	//search person by name
 	public List<PersonDTO> searchPerson(String name, int pageNo, int pageSize) {
 		Bson regexFilter = new Document("$or",
 				Arrays.asList(new Document("firstName", new Document("$regex", name).append("$option", "i")),
@@ -103,6 +109,7 @@ public class PersonRepository {
 		
 	}
 
+	//add language for person
 	public UpdateResult addLanguageforPerson(String id, Language lang) {
 		Bson filter = Filters.eq("_id", new ObjectId(id));
 		Bson update = Updates.set("languages", lang);
@@ -112,6 +119,7 @@ public class PersonRepository {
 		return ur;
 	}
 
+	//remove language for person
 	public UpdateResult removeLangOfPerson(String id, Language lang) {
 		Bson filter = Filters.eq("_id", new ObjectId(id));
 		Bson update = Updates.pull("languages", lang);
@@ -119,6 +127,7 @@ public class PersonRepository {
 		return ur;
 	}
 
+	//add info for person
 	public UpdateResult addInfPerson(String id, Info inf) {
 		Bson filter = Filters.eq("_id", new ObjectId(id));
 
@@ -129,6 +138,7 @@ public class PersonRepository {
 		return ur;
 	}
 
+	//remove info for person
 	public UpdateResult removeInfOfPerson(String id, Info inf) {
 		Bson filter = Filters.eq("_id", new ObjectId(id));
 		Bson update = Updates.pull("infos", inf);
@@ -138,6 +148,7 @@ public class PersonRepository {
 		return ur;
 	}
 
+	//update sex for all persons
 	public UpdateResult updateSexPerson() {
 		Bson filterSex = Filters.ne("sex", 2);
 		Bson update = Updates.set("sex", 2);
@@ -146,6 +157,7 @@ public class PersonRepository {
 		return ur;
 	}
 
+	// 9.Viết query đếm trong collection person có bao nhiêu sdt
 	public Document countTotalPhone() {
 		List<Bson> pipeline = new ArrayList<>();
 		// check phonePerson null?
@@ -164,6 +176,8 @@ public class PersonRepository {
 		return d;
 	}
 
+	// 10. Viết query get toàn bộ language hiện có trong collection person (kết quả
+		// ko được trùng nhau)
 	public List<Document> getAllLang(int pageNo,int pageSize) {
 		
 		  List<Bson> pipeline = new ArrayList<>();
@@ -185,7 +199,8 @@ public class PersonRepository {
 
 	}
 
-	//get Persons By Name And Month
+	// 11.Viết query get những person có tên chứa "Nguyễn" và ngày sinh trong khoảng
+		// tháng 2~ tháng 10
 	public List<Document> getPersonsByNameAndMonth(String name, Integer monthStart, Integer monthEnd, int pageNo, int pageSize) {
 		List<Bson> pipeline = new ArrayList<>();
 
@@ -209,6 +224,14 @@ public class PersonRepository {
 		
 	}
 
+	// 12. Viết query get thông tin của toàn bộ person có giới tính là nam +
+		// language là "Tiếng Việt", yêu cầu:
+		// - Group theo fullname (họ + tên)
+		// - Kết quả trả về bao gồm:
+		// + fullname (họ + tên)
+		// + sdt
+		// + language (chỉ hiển thị language "Tiếng Việt")
+		// + email (chỉ hiển thị những email có đuôi là @gmail.com)
 	public List<Document> getPersonsByCond(int pageNo, int pageSize) {
 		List<Bson> pipeline = new ArrayList<>();
 		Bson limit = Aggregates.limit(pageSize);
@@ -238,6 +261,7 @@ public class PersonRepository {
 		return docs;
 	}
 
+	// .13
 	public List<Document> getPersonsAndCountByCond(int pageNo, int pageSize) {
 		List<Bson> pipeline = new ArrayList<>();
 
@@ -284,6 +308,8 @@ public class PersonRepository {
 		return docs;
 	}
 
+	
+	// 5.update 1 CMND của 1 person thành deactive (ko còn sử dụng nữa)
 	public UpdateResult updateInfPersonToDeactive(String id, Info inf) {
 		Bson filter = Filters.eq("_id", new ObjectId(id));
 		Bson filter2 = Filters.eq("infos.numberId", inf.getNumberId());
@@ -296,6 +322,11 @@ public class PersonRepository {
 		return ur;
 	}
 
+	// 14
+		// Viết query update thông tin của 1 person, gồm:
+		// sex
+		// infor: thêm mới 1 infor
+		// langs: xoá 1 lang
 	public UpdateResult updateMultiField(PersonDTO pDTO, String id) {
 		Bson filter = Filters.eq("_id", new ObjectId(id));
 
