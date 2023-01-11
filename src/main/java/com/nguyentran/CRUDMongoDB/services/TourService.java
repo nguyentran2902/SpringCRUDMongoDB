@@ -7,10 +7,11 @@ import java.util.List;
 
 import org.bson.Document;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.nguyentran.CRUDMongoDB.exceptionhandler.InternalServerException;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.NoContentException;
 import com.nguyentran.CRUDMongoDB.repositories.TourRepository;
 
 @Service
@@ -22,68 +23,66 @@ public class TourService {
 	public List<Document> getInfosTour(Integer numSlot, String lang, String date, String currency, int pageNo,
 			int pageSize) {
 
-		// 1.Get list filter Tour
-		List<Document> tourDocs = tourRepository.getInfosTour(numSlot, lang);
+		try {
+			// 1.Get list filter Tour
+			List<Document> tourDocs = tourRepository.getInfosTour(numSlot, lang);
 
-		if (tourDocs == null || tourDocs.size() == 0) {
-			return null;
-		}
-
-		// 1.2 Get list tourId
-		List<String> listTourId = new ArrayList<String>();
-		for (Document d : tourDocs) {
-			listTourId.add(d.get("_id").toString());
-
-		}
-
-		// 2.1 Get list filter dateOpen
-		List<Document> dateOpenDocs = tourRepository.getListDateOpenFilter(date, listTourId);
-		if (dateOpenDocs == null || dateOpenDocs.size() == 0) {
-			return null;
-		}
-		// 2.2 Get list dateOpenId
-		List<String> listDateOpenId = new ArrayList<String>();
-		for (Document d : dateOpenDocs) {
-			listDateOpenId.add(d.get("tourId").toString());
-
-		}
-
-		// 3. get list filter priceTour
-		List<Document> priceTourDocs = tourRepository.getListPriceTourFilter(date, listDateOpenId, pageNo, pageSize);
-
-		if (priceTourDocs == null || priceTourDocs.size() == 0) {
-			return null;
-		}
-
-		
-
-		// put list Tour to hashmap
-		HashMap<String, Document> tourMap = new HashMap<String, Document>();
-		for (Document docTour : tourDocs) {
-			tourMap.put(docTour.get("_id").toString(), docTour);
-		}
-
-		// 4.put price and curency to list filter priceTour
-		for (Document dPriceTour : priceTourDocs) {
-
-			// get document from tourPrice
-			Document docTour = tourMap.get(dPriceTour.get("tourId").toString());
-			
-			if(docTour!=null) {
-				dPriceTour.put("infos", docTour.get("infos"));
-				dPriceTour.put("slot", docTour.get("slot"));
+			if (tourDocs == null || tourDocs.size() == 0) {
+				throw new NoContentException("");
 			}
-			dPriceTour.put("slotInput", numSlot);
-			dPriceTour.put("dateOpen", date);
-			if(dPriceTour.get("currency")!=null) {
-				dPriceTour.put("availablePrice",
-						convertCurency(numSlot, currency, dPriceTour.get("currency"), dPriceTour.get("price")));
-			} else dPriceTour.put("availablePrice",
-					"not found");
-			
-		}
 
-		return priceTourDocs;
+			// 1.2 put list Tour to hashmap
+			HashMap<String, Document> tourMaps = new HashMap<String, Document>();
+			for (Document tourDoc : tourDocs) {
+				tourMaps.put(tourDoc.get("_id").toString(), tourDoc);
+			}
+
+			// 2.1 Get list filter dateOpen
+			List<Document> dateOpenDocs = tourRepository.getListDateOpenFilter(date, tourMaps.keySet());
+			if (dateOpenDocs == null || dateOpenDocs.size() == 0) {
+				throw new NoContentException("");
+			}
+			// 2.2 Get list dateOpenId
+			List<String> listDateOpenId = new ArrayList<String>();
+			for (Document d : dateOpenDocs) {
+				listDateOpenId.add(d.get("tourId").toString());
+
+			}
+
+			// 3. get list filter priceTour
+			List<Document> priceTourDocs = tourRepository.getListPriceTourFilter(date, listDateOpenId, pageNo,
+					pageSize);
+
+			if (priceTourDocs == null || priceTourDocs.size() == 0) {
+				throw new NoContentException("");
+			}
+
+			// 4.put price and currency to list filter priceTour
+			for (Document dPriceTour : priceTourDocs) {
+
+				// get document from tour
+				Document tourDoc = tourMaps.get(dPriceTour.get("tourId").toString());
+
+				dPriceTour.put("slotInput", numSlot);
+				dPriceTour.put("dateOpen", date);
+
+				if (tourDoc != null) {
+					dPriceTour.put("infos", tourDoc.get("infos"));
+					dPriceTour.put("slot", tourDoc.get("slot"));
+				}
+
+				if (dPriceTour.get("currency") != null && dPriceTour.get("price") != null) {
+					dPriceTour.put("availablePrice",
+							convertCurency(numSlot, currency, dPriceTour.get("currency"), dPriceTour.get("price")));
+				} else
+					dPriceTour.put("availablePrice", "not found");
+
+			}
+
+			return priceTourDocs;
+		} catch (Exception e) {
+			throw new InternalServerException(e.getMessage());
+		}
 
 	}
 

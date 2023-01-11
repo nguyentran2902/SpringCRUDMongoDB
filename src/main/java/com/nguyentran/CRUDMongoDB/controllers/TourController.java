@@ -13,6 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nguyentran.CRUDMongoDB.entity.ApiResponse.ApiResponse;
+import com.nguyentran.CRUDMongoDB.entity.ApiResponse.Meta;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.HandleException;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.InternalServerException;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.InvalidInputException;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.NoContentException;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.NotFoundException;
 import com.nguyentran.CRUDMongoDB.services.TourService;
 
 @RestController
@@ -24,36 +31,51 @@ public class TourController {
 
 	@GetMapping("/getInfosTour")
 	public ResponseEntity<?> getInfosTour(
-			@RequestParam(value = "numSlot", defaultValue = "1", required = false) Integer numSlot,
+			@RequestParam(value = "numSlot", defaultValue = "1", required = false) String numSlot,
 			@RequestParam(value = "lang", required = false) String lang,
 			@RequestParam(value = "date", required = false) String date,
 			@RequestParam(value = "currency", defaultValue = "vnd", required = false) String currency,
 			@RequestParam(value = "pageNo", defaultValue = "1", required = false) int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize)
-			throws ParseException {
+			{
+		ApiResponse apiResponse = new ApiResponse();
 
 		// check input
-		if (numSlot == null || numSlot <= 0 ) {
-			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Error: Invalid input data: numSlot!");
+		if (numSlot == null  || !isNumeric(numSlot) || Integer.valueOf(numSlot) <= 0) {
+			throw new InvalidInputException("Invalid input: numSlot");
 		}
-		HashMap<String, Object> reponse = new HashMap<>();
+		
 		try {
 			// get infos
-			List<Document> infosTour = tourService.getInfosTour(numSlot, lang, date, currency, pageNo, pageSize);
+			List<Document> infosTour = tourService.getInfosTour(Integer.valueOf(numSlot), lang, date, currency, pageNo, pageSize);
+			
+			//call APi succsess and get data
 			if (infosTour != null && infosTour.size() > 0) {
-				reponse.put("message", "success");
-				reponse.put("data", infosTour);
-				return ResponseEntity.ok(reponse);
+				
+				Meta meta= new Meta(infosTour.size(),pageNo);
+				apiResponse.setSuccess( true);
+				apiResponse.setCode(200);
+				apiResponse.setData(infosTour);
+				apiResponse.setMeta(meta);
+				return ResponseEntity.ok(apiResponse);
 			}
-			reponse.put("message", "success");
-			reponse.put("data", "Not found any info tour in data");
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(reponse);
+			
+			//call API success but not found data
+			throw new NoContentException("");
+			
 		} catch (Exception e) {
-			reponse.put("message", "error");
-			reponse.put("data", "Error: " + e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(reponse);
+			throw new InternalServerException(e.getMessage());
 		}
 
 	}
+	
+	public boolean isNumeric(String str) { 
+		  try {  
+		    Integer.parseInt(str);  
+		    return true;
+		  } catch(NumberFormatException e){  
+		    return false;  
+		  }  
+		}
 
 }

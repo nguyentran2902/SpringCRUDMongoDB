@@ -2,38 +2,29 @@ package com.nguyentran.CRUDMongoDB;
 
 import java.io.IOException;
 
-import org.bson.Document;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
-import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
-import org.springframework.data.mongodb.core.convert.DbRefResolver;
-import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
-import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
-import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 @SpringBootApplication
 @EnableMongoRepositories
+@EnableCaching
 public class CrudMongoDbApplication extends AbstractMongoClientConfiguration {
 
 	@Value("${spring.data.mongodb.host}")
@@ -68,22 +59,24 @@ public class CrudMongoDbApplication extends AbstractMongoClientConfiguration {
 		return modelMapper;
 	}
 	
-	@Bean
-	public FirebaseMessaging firebaseMessaging() throws IOException {
-	    GoogleCredentials googleCredentials = GoogleCredentials
-	            .fromStream(new ClassPathResource("firebase-service-account.json").getInputStream());
-	    FirebaseOptions firebaseOptions = FirebaseOptions
-	            .builder()
-	            .setCredentials(googleCredentials)
-	            .build();
-	    
-	    FirebaseApp app = null ;
-	    if (FirebaseApp.getApps().isEmpty()) {
-	    	 app = FirebaseApp.initializeApp(firebaseOptions);
-        }
-	    
-	    return FirebaseMessaging.getInstance(app);
-	}
+	
+	
+//	@Bean
+//	public FirebaseMessaging firebaseMessaging() throws IOException {
+//	    GoogleCredentials googleCredentials = GoogleCredentials
+//	            .fromStream(new ClassPathResource("firebase-service-account.json").getInputStream());
+//	    FirebaseOptions firebaseOptions = FirebaseOptions
+//	            .builder()
+//	            .setCredentials(googleCredentials)
+//	            .build();
+//	    
+//	    FirebaseApp app = null ;
+//	    if (FirebaseApp.getApps().isEmpty()) {
+//	    	 app = FirebaseApp.initializeApp(firebaseOptions);
+//        }
+//	    
+//	    return FirebaseMessaging.getInstance(app);
+//	}
 	
 //	@Bean
 //	public FirebaseApp firebaseApp(GoogleCredentials credentials) {

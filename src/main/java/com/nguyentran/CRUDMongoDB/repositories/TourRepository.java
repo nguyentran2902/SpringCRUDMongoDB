@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -45,11 +45,11 @@ public class TourRepository {
 	}
 
 	//  Get list dateOpen filter by date and listTourId
-	public List<Document> getListDateOpenFilter(String date,List<String> listTourId) {
+	public List<Document> getListDateOpenFilter(String date,Set<String> listId) {
 		List<Bson> DateOpenPipeline = new ArrayList<Bson>();
 		Bson match = new Document("$match", new Document("dateAvailable", date)
 				.append("status", 1)
-				.append("tourId", new Document("$in", listTourId)));
+				.append("tourId", new Document("$in", listId)));
 		DateOpenPipeline.add(match);
 
 		List<Document> dateOpenDocs = new ArrayList<>();

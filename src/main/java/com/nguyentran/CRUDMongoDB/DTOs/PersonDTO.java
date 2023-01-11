@@ -1,7 +1,12 @@
 package com.nguyentran.CRUDMongoDB.DTOs;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.SerializationException;
 
 import com.nguyentran.CRUDMongoDB.entity.PersonObject.Email;
 import com.nguyentran.CRUDMongoDB.entity.PersonObject.Info;
@@ -11,7 +16,7 @@ import com.nguyentran.CRUDMongoDB.entity.PersonObject.Phone;
 import lombok.Data;
 
 @Data
-public class PersonDTO {
+public class PersonDTO  implements Serializable{
 	private String _id;
 	private String firstName;
 	private String lastName;
@@ -22,4 +27,6 @@ public class PersonDTO {
 	private List<Email> emails;
 	private List<Info> infos;
 	private List<Language> languages;
+	
+
 }

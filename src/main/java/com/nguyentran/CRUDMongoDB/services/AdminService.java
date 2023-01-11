@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.client.result.InsertOneResult;
 import com.nguyentran.CRUDMongoDB.entity.Admin;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.DuplicateRecordException;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.InternalServerException;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.NotFoundException;
 import com.nguyentran.CRUDMongoDB.repositories.AdminRepository;
 
 
@@ -31,11 +34,9 @@ public class AdminService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		
-	
 		Admin admin = adminRepository.loadAdminByUsername(username);
 		if (admin == null) {
-			throw new UsernameNotFoundException(username);
+			throw new UsernameNotFoundException(username + " is not exist!!!");
 		}
 		
 		Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -58,7 +59,7 @@ public class AdminService implements UserDetailsService {
 		Admin adminExist = adminRepository.loadAdminByUsername(admin.getUsername());
 		
 		if(adminExist!=null) {
-			return 0;
+			throw new DuplicateRecordException("Username: "+admin.getUsername() +" is exist!!");
 		}
 		admin.setPassword(passwordEncoder.encode(admin.getPassword()));
 		InsertOneResult ior = adminRepository.saveAdmin(admin);
@@ -67,7 +68,7 @@ public class AdminService implements UserDetailsService {
 		
 		 };
 		 
-		 return 2;
+		 throw new InternalServerException("Server error");
 
 	}
 	

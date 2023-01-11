@@ -1,11 +1,12 @@
- package com.nguyentran.CRUDMongoDB.controllers;
+package com.nguyentran.CRUDMongoDB.controllers;
 
-
+import java.util.HashMap;
 import java.util.List;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,7 +24,6 @@ import com.nguyentran.CRUDMongoDB.entity.PersonObject.Info;
 import com.nguyentran.CRUDMongoDB.entity.PersonObject.Language;
 import com.nguyentran.CRUDMongoDB.services.PersonService;
 
-
 @RestController
 @RequestMapping("/admin/person")
 public class PersonController {
@@ -32,15 +32,28 @@ public class PersonController {
 	private PersonService personService;
 
 	// get all person
+	@GetMapping("/getAllPersonCache/{id}")
+	@Cacheable(value="person",key="#id", cacheManager ="cacheManager")
+	public PersonDTO getAllPersonsCache(@PathVariable String id) {
+		PersonDTO personDTO = personService.getPersonById(id);
+		HashMap<String, Object> map = new HashMap<>();
+		System.out.println(personDTO.toString());
+		map.put(id, personDTO.toString());
+		return personDTO;
+
+	}
+
+	// get all person
 	@GetMapping("/getAllPerson")
 	public ResponseEntity<?> getAllPersons(
 			@RequestParam(value = "pageNo", defaultValue = "1", required = false) int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize) {
 
 		try {
-			List<PersonDTO> personsDTO = personService.getAllPersons(pageNo, pageSize);
-			if (personsDTO != null && personsDTO.size() > 0)
-				return ResponseEntity.ok(personsDTO);
+			List<PersonDTO> personsDTOs = personService.getAllPersons(pageNo, pageSize);
+
+			if (personsDTOs != null && personsDTOs.size() > 0)
+				return ResponseEntity.ok(personsDTOs);
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Error: Not found any person in data");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e);
@@ -113,8 +126,6 @@ public class PersonController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e);
 		}
-
-		
 
 	}
 
@@ -358,10 +369,11 @@ public class PersonController {
 	// 10. Viết query get toàn bộ language hiện có trong collection person (kết quả
 	// ko được trùng nhau)
 	@GetMapping("/getallLang")
-	public ResponseEntity<?> getAllLang(@RequestParam(value = "pageNo", defaultValue = "1", required = false) int pageNo,
+	public ResponseEntity<?> getAllLang(
+			@RequestParam(value = "pageNo", defaultValue = "1", required = false) int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize) {
 		try {
-			List<Document> langs = personService.getAllLang(pageNo,pageSize);
+			List<Document> langs = personService.getAllLang(pageNo, pageSize);
 			if (langs != null && langs.size() > 0)
 				return ResponseEntity.status(HttpStatus.OK).body(langs);
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Error:get failed");
