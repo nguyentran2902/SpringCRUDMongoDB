@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nguyentran.CRUDMongoDB.entity.ApiResponse.ApiResponse;
 import com.nguyentran.CRUDMongoDB.entity.ApiResponse.Meta;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.AccessDeniedException;
 import com.nguyentran.CRUDMongoDB.exceptionhandler.HandleException;
 import com.nguyentran.CRUDMongoDB.exceptionhandler.InternalServerException;
 import com.nguyentran.CRUDMongoDB.exceptionhandler.InvalidInputException;
 import com.nguyentran.CRUDMongoDB.exceptionhandler.NoContentException;
 import com.nguyentran.CRUDMongoDB.exceptionhandler.NotFoundException;
+import com.nguyentran.CRUDMongoDB.services.AdminService;
 import com.nguyentran.CRUDMongoDB.services.TourService;
 
 @RestController
@@ -28,9 +32,13 @@ public class TourController {
 
 	@Autowired
 	private TourService tourService;
+	
+	@Autowired
+	private AdminService adminService;
 
 	@GetMapping("/getInfosTour")
 	public ResponseEntity<?> getInfosTour(
+			@RequestParam(value = "token",  required = false) String token,
 			@RequestParam(value = "numSlot", defaultValue = "1", required = false) String numSlot,
 			@RequestParam(value = "lang", required = false) String lang,
 			@RequestParam(value = "date", required = false) String date,
@@ -38,6 +46,17 @@ public class TourController {
 			@RequestParam(value = "pageNo", defaultValue = "1", required = false) int pageNo,
 			@RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize)
 			{
+		
+		
+		
+		if(token == null || token.isEmpty()) {
+			throw new AccessDeniedException("loss token!!!");
+		}
+		
+		if(!adminService.isLogin(token)) {
+			throw new AccessDeniedException("You need to login first!!!");
+		}
+		
 		ApiResponse apiResponse = new ApiResponse();
 
 		// check input

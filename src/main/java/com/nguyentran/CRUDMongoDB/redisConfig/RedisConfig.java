@@ -49,7 +49,7 @@ class RedisConfig {
 	@Bean
 	public RedisTemplate<String, Object> redisTemplate() {
 		// tạo ra một RedisTemplate
-		// Với Key là Object
+		// Với Key là String
 		// Value là Object
 		// RedisTemplate giúp chúng ta thao tác với Redis
 		RedisTemplate<String, Object> template = new RedisTemplate<>();

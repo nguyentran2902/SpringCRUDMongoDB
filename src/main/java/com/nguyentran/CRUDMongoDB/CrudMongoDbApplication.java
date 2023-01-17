@@ -12,7 +12,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -57,6 +58,11 @@ public class CrudMongoDbApplication extends AbstractMongoClientConfiguration {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setSkipNullEnabled(true);
 		return modelMapper;
+	}
+	@Bean
+	public static  PasswordEncoder passwordEncoder() {
+		// Password encoder, để Spring Security sử dụng mã hóa mật khẩu người dùngs
+		return new BCryptPasswordEncoder();
 	}
 	
 	

@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class AccessDeniedException  extends RuntimeException{
-	private HttpServletResponse res;
+	
 	private String message;
 	
 

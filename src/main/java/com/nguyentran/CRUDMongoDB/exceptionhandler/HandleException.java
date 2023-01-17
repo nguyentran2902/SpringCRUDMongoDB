@@ -58,7 +58,7 @@ public class HandleException {
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<?> handlerAccessDeniedException(AccessDeniedException ex) {
 		// Log err
-		ex.getRes().setContentType("application/json");
+		
 		ApiResponse apiResponse = new ApiResponse();
 		apiResponse.setSuccess(true);
 		apiResponse.setCode(403);
@@ -78,14 +78,14 @@ public class HandleException {
 	}
 
 	// Xử lý tất cả các exception chưa được khai báo
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<?> handlerException(Exception ex) {
-		// Log err
-		ApiResponse apiResponse = new ApiResponse();
-		apiResponse.setSuccess(false);
-		apiResponse.setCode(500);
-		apiResponse.setMessage(ex.getMessage());
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
-	}
+//	@ExceptionHandler(Exception.class)
+//	public ResponseEntity<?> handlerException(Exception ex) {
+//		// Log err
+//		ApiResponse apiResponse = new ApiResponse();
+//		apiResponse.setSuccess(false);
+//		apiResponse.setCode(500);
+//		apiResponse.setMessage(ex.getMessage());
+//		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+//	}
 
 }

@@ -33,7 +33,7 @@ public class TourService {
 
 			// 1.2 put list Tour to hashmap
 			HashMap<String, Document> tourMaps = new HashMap<String, Document>();
-			for (Document tourDoc : tourDocs) {
+			for (Document tourDoc : tourDocs) {			
 				tourMaps.put(tourDoc.get("_id").toString(), tourDoc);
 			}
 
@@ -104,5 +104,7 @@ public class TourService {
 		DecimalFormat df = new DecimalFormat("#.###");
 		return df.format(numSlot * priceConvert);
 	}
+
+	
 
 }

@@ -31,7 +31,7 @@ public class PersonService {
 	private PersonRepository personRepository;
 
 	// get ListP
-	@Cacheable(value="listPerson", cacheManager ="cacheManager10m")
+//	@Cacheable(value="listPerson", cacheManager ="cacheManager10m")
 	public List<PersonDTO> getAllPersons(int pageNo, int pageSize) {
 		List<PersonDTO> personDTOs = new ArrayList<PersonDTO>();
 		personRepository.getAllPersons(personDTOs, pageNo, pageSize);
@@ -39,7 +39,7 @@ public class PersonService {
 	}
 
 	// find by ID
-	@Cacheable(value="person",key="#id", cacheManager ="cacheManager1h")
+//	@Cacheable(value="person",key="#id", cacheManager ="cacheManager1h")//lưu data trong vòng 1h
 	public PersonDTO getPersonById(String id) {
 		Person p = personRepository.getPersonById(id);
 		if (p != null)

@@ -1,5 +1,8 @@
 package com.nguyentran.CRUDMongoDB.repositories;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -11,8 +14,10 @@ import org.springframework.stereotype.Repository;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.InsertOneResult;
 import com.nguyentran.CRUDMongoDB.entity.Admin;
+import com.nguyentran.CRUDMongoDB.entity.Person;
 
 @Repository
 public class AdminRepository {
@@ -33,9 +38,13 @@ public class AdminRepository {
 	}
 
 	public Admin loadAdminByUsername(String username) {
-		Bson match = new Document("username", username);
+		
+		Bson match = new Document("username", username).append("status", 1);
+		
+	
 		Admin admin = adminCollection.find(match).first();
-		return admin;
+	
+		return  admin;
 	}
 
 	public Admin getUserById(String id) {
