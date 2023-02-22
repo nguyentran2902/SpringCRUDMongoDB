@@ -19,7 +19,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
 		
     	
-    		 throw new AccessDeniedException("access denied, your rule is not allowed!!");
+    		 throw new AccessDeniedException("Access denied, your role is not allowed!!");
     		 
     	 
       

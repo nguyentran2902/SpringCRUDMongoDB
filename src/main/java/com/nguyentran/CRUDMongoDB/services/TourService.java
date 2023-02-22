@@ -1,6 +1,7 @@
 package com.nguyentran.CRUDMongoDB.services;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ public class TourService {
 			int pageSize) {
 
 		try {
+			
 			// 1.Get list filter Tour
 			List<Document> tourDocs = tourRepository.getInfosTour(numSlot, lang);
 
@@ -48,7 +50,7 @@ public class TourService {
 				listDateOpenId.add(d.get("tourId").toString());
 
 			}
-
+			
 			// 3. get list filter priceTour
 			List<Document> priceTourDocs = tourRepository.getListPriceTourFilter(date, listDateOpenId, pageNo,
 					pageSize);

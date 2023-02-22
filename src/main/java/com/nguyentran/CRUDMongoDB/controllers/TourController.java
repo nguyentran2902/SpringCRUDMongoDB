@@ -10,6 +10,7 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +29,7 @@ import com.nguyentran.CRUDMongoDB.services.TourService;
 
 @RestController
 @RequestMapping("/admin/tour")
+//@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class TourController {
 
 	@Autowired
@@ -35,10 +37,12 @@ public class TourController {
 	
 	@Autowired
 	private AdminService adminService;
+	
+	static final String HEADER_STRING = "token";
 
 	@GetMapping("/getInfosTour")
 	public ResponseEntity<?> getInfosTour(
-			@RequestParam(value = "token",  required = false) String token,
+			HttpServletRequest request,
 			@RequestParam(value = "numSlot", defaultValue = "1", required = false) String numSlot,
 			@RequestParam(value = "lang", required = false) String lang,
 			@RequestParam(value = "date", required = false) String date,
@@ -47,13 +51,14 @@ public class TourController {
 			@RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize)
 			{
 		
-		
+//		 get token by request header
+		String token = request.getHeader(HEADER_STRING);
 		
 		if(token == null || token.isEmpty()) {
-			throw new AccessDeniedException("loss token!!!");
+			throw new AccessDeniedException("Loss token!!!");
 		}
 		
-		if(!adminService.isLogin(token)) {
+		if(!adminService.isAdmin(token)) {
 			throw new AccessDeniedException("You need to login first!!!");
 		}
 		
@@ -80,7 +85,7 @@ public class TourController {
 			}
 			
 			//call API success but not found data
-			throw new NoContentException("");
+			throw new NoContentException("No Content");
 			
 		} catch (Exception e) {
 			throw new InternalServerException(e.getMessage());
@@ -96,5 +101,7 @@ public class TourController {
 		    return false;  
 		  }  
 		}
+	
+	
 
 }

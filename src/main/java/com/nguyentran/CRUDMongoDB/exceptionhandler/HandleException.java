@@ -4,11 +4,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.nguyentran.CRUDMongoDB.entity.ApiResponse.ApiResponse;
 
 @RestControllerAdvice
-public class HandleException {
+public class HandleException extends ResponseEntityExceptionHandler {
 
 	// not found exception
 	@ExceptionHandler(NotFoundException.class)
@@ -54,27 +55,39 @@ public class HandleException {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
 	}
 
-	// Access Denied exception
-	@ExceptionHandler(AccessDeniedException.class)
-	public ResponseEntity<?> handlerAccessDeniedException(AccessDeniedException ex) {
-		// Log err
-		
-		ApiResponse apiResponse = new ApiResponse();
-		apiResponse.setSuccess(true);
-		apiResponse.setCode(403);
-		apiResponse.setMessage(ex.getMessage());
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
-	}
-
 	// Internal server exception
 	@ExceptionHandler(InternalServerException.class)
-	public ResponseEntity<?> handlerNoContentException(InternalServerException ex) {
+	public ResponseEntity<?> handlerInternalServerException(InternalServerException ex) {
 		// Log err
 		ApiResponse apiResponse = new ApiResponse();
 		apiResponse.setSuccess(false);
 		apiResponse.setCode(500);
 		apiResponse.setMessage(ex.getMessage());
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+	}
+
+	// Access Denied exception
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<?> handlerAccessDeniedException(AccessDeniedException ex) {
+		// Log err
+
+		ApiResponse apiResponse = new ApiResponse();
+		apiResponse.setSuccess(true);
+		apiResponse.setCode(401);
+		apiResponse.setMessage(ex.getMessage());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+	}
+
+	// Access Denied exception
+	@ExceptionHandler(ExpiredRefreshTokenException.class)
+	public ResponseEntity<?> handlerExpiredRefreshToken(ExpiredRefreshTokenException ex) {
+		// Log err
+
+		ApiResponse apiResponse = new ApiResponse();
+		apiResponse.setSuccess(true);
+		apiResponse.setCode(403);
+		apiResponse.setMessage(ex.getMessage());
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
 	}
 
 	// Xử lý tất cả các exception chưa được khai báo

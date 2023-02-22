@@ -19,4 +19,5 @@ public class Tour {
 	private List<Info> infos;
 	private Integer slot;
 
+	
 }

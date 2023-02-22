@@ -1,6 +1,7 @@
 package com.nguyentran.CRUDMongoDB.redisConfig;
 
 import java.time.Duration;
+import java.util.HashMap;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,12 +48,12 @@ class RedisConfig {
 //	}
 
 	@Bean
-	public RedisTemplate<String, Object> redisTemplate() {
+	public RedisTemplate<String, HashMap<String, Object>> redisTemplate() {
 		// tạo ra một RedisTemplate
 		// Với Key là String
 		// Value là Object
 		// RedisTemplate giúp chúng ta thao tác với Redis
-		RedisTemplate<String, Object> template = new RedisTemplate<>();
+		RedisTemplate<String, HashMap<String, Object>> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory());
 
 		template.setKeySerializer(new StringRedisSerializer());

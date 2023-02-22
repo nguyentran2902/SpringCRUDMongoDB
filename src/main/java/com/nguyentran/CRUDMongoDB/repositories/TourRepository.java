@@ -20,6 +20,7 @@ import com.mongodb.client.model.Aggregates;
 import com.nguyentran.CRUDMongoDB.entity.DateOpen;
 import com.nguyentran.CRUDMongoDB.entity.PriceTour;
 import com.nguyentran.CRUDMongoDB.entity.Tour;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.InternalServerException;
 
 @Repository
 public class TourRepository {
@@ -46,20 +47,27 @@ public class TourRepository {
 
 	//  Get list dateOpen filter by date and listTourId
 	public List<Document> getListDateOpenFilter(String date,Set<String> listId) {
+		List<Document> dateOpenDocs = new ArrayList<>();
+		try {
 		List<Bson> DateOpenPipeline = new ArrayList<Bson>();
 		Bson match = new Document("$match", new Document("dateAvailable", date)
 				.append("status", 1)
 				.append("tourId", new Document("$in", listId)));
 		DateOpenPipeline.add(match);
 
-		List<Document> dateOpenDocs = new ArrayList<>();
-		dateOpenCollection.aggregate(DateOpenPipeline, Document.class).into(dateOpenDocs);
+		
+			dateOpenCollection.aggregate(DateOpenPipeline, Document.class).into(dateOpenDocs);
+		} catch (Exception e) {
+			throw new InternalServerException(e.getMessage());
+		}
 		return dateOpenDocs;
 	}
 
 	// get list priceTour filter by date and listIdDateOpen
 	public List<Document> getListPriceTourFilter(String date, List<String> listIdDateOpen, int pageNo,
 			int pageSize) {
+		List<Document> priceTourDocs = new ArrayList<>();
+		try {
 		List<Bson> priceTourPipeline = new ArrayList<Bson>();
 
 //		Bson match = new Document("$match",new Document("dateApplyStart",
@@ -68,7 +76,7 @@ public class TourRepository {
 //				.append("tourId", new Document("$in",listIdDateOpen))));
 
 		Bson match = new Document("$match",
-				new Document("$and",
+							new Document("$and",
 						Arrays.asList(new Document("dateApplyStart", new Document("$lte", LocalDate.parse(date))),
 								new Document("dateApplyEnd", new Document("$gte", LocalDate.parse(date))),
 								new Document("tourId", new Document("$in", listIdDateOpen)))));
@@ -82,8 +90,12 @@ public class TourRepository {
 		priceTourPipeline.add(project);
 		priceTourPipeline.add(Aggregates.limit(pageSize));
 		priceTourPipeline.add(Aggregates.skip((pageNo - 1) * pageSize));
-		List<Document> priceTourDocs = new ArrayList<>();
-		priceTourCollection.aggregate(priceTourPipeline, Document.class).into(priceTourDocs);
+		
+		
+			priceTourCollection.aggregate(priceTourPipeline, Document.class).into(priceTourDocs);
+		} catch (Exception e) {
+			throw new InternalServerException(e.getMessage());
+		}
 		return priceTourDocs;
 	}
 

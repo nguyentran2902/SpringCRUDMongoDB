@@ -71,7 +71,8 @@
 //		http.authorizeRequests().antMatchers("/admin/create","/admin/login").permitAll();
 //		
 //		//Các api theo đường dẫn có admin phải có quyền ADMIN || MANAGER
-//		http.authorizeRequests().antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER");
+//		http.authorizeRequests().antMatchers("/admin/**").permitAll();
+////		.hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER");
 //		
 //		//Còn lại mọi request đều phải được authen 
 //		http.authorizeRequests().anyRequest().authenticated();

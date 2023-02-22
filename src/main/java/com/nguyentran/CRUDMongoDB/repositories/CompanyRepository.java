@@ -1,4 +1,4 @@
-package com.nguyentran.CRUDMongoDB.repositories;
+ package com.nguyentran.CRUDMongoDB.repositories;
 
 import java.util.ArrayList;
 import java.util.Arrays;

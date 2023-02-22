@@ -54,7 +54,7 @@ public class PersonController {
 
 			if (personsDTOs != null && personsDTOs.size() > 0)
 				return ResponseEntity.ok(personsDTOs);
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Error: Not found any person in data");
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Not found any person in data");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e);
 		}
