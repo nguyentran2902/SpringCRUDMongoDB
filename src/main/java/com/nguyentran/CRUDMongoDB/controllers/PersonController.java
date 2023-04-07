@@ -58,7 +58,6 @@ public class PersonController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e);
 		}
-
 	}
 
 	// get person by id

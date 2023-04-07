@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nguyentran.CRUDMongoDB.common.TourBuzConstants;
 import com.nguyentran.CRUDMongoDB.entity.ApiResponse.ApiResponse;
 import com.nguyentran.CRUDMongoDB.entity.ApiResponse.Meta;
 import com.nguyentran.CRUDMongoDB.exceptionhandler.AccessDeniedException;
+import com.nguyentran.CRUDMongoDB.exceptionhandler.ForbiddenException;
 import com.nguyentran.CRUDMongoDB.exceptionhandler.HandleException;
 import com.nguyentran.CRUDMongoDB.exceptionhandler.InternalServerException;
 import com.nguyentran.CRUDMongoDB.exceptionhandler.InvalidInputException;
@@ -38,7 +40,7 @@ public class TourController {
 	@Autowired
 	private AdminService adminService;
 	
-	static final String HEADER_STRING = "token";
+	static final String HEADER_ACCESS_TOKEN	 = "access_token";
 
 	@GetMapping("/getInfosTour")
 	public ResponseEntity<?> getInfosTour(
@@ -51,19 +53,14 @@ public class TourController {
 			@RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize)
 			{
 		
-//		 get token by request header
-		String token = request.getHeader(HEADER_STRING);
-		
+		//get token by request header
+		String token = request.getHeader(HEADER_ACCESS_TOKEN);		
 		if(token == null || token.isEmpty()) {
 			throw new AccessDeniedException("Loss token!!!");
-		}
-		
-		if(!adminService.isAdmin(token)) {
-			throw new AccessDeniedException("You need to login first!!!");
-		}
-		
-		ApiResponse apiResponse = new ApiResponse();
-
+		}		
+		if(!adminService.checkRoleUser(request,token,TourBuzConstants.BUZ_PAG_PROD_INFE_FNV_VIE_PROD)) {
+			throw new ForbiddenException("You need to login first!!!");
+		}		
 		// check input
 		if (numSlot == null  || !isNumeric(numSlot) || Integer.valueOf(numSlot) <= 0) {
 			throw new InvalidInputException("Invalid input: numSlot");
@@ -71,11 +68,10 @@ public class TourController {
 		
 		try {
 			// get infos
-			List<Document> infosTour = tourService.getInfosTour(Integer.valueOf(numSlot), lang, date, currency, pageNo, pageSize);
-			
+			List<Document> infosTour = tourService.getInfosTour(Integer.valueOf(numSlot), lang, date, currency, pageNo, pageSize);		
+			ApiResponse apiResponse = new ApiResponse();
 			//call APi succsess and get data
-			if (infosTour != null && infosTour.size() > 0) {
-				
+			if (infosTour != null && infosTour.size() > 0) {				
 				Meta meta= new Meta(infosTour.size(),pageNo);
 				apiResponse.setSuccess( true);
 				apiResponse.setCode(200);

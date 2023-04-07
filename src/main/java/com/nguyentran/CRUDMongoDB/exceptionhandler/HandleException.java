@@ -79,8 +79,8 @@ public class HandleException extends ResponseEntityExceptionHandler {
 	}
 
 	// Access Denied exception
-	@ExceptionHandler(ExpiredRefreshTokenException.class)
-	public ResponseEntity<?> handlerExpiredRefreshToken(ExpiredRefreshTokenException ex) {
+	@ExceptionHandler(ForbiddenException.class)
+	public ResponseEntity<?> handlerExpiredRefreshToken(ForbiddenException ex) {
 		// Log err
 
 		ApiResponse apiResponse = new ApiResponse();

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExpiredRefreshTokenException extends RuntimeException{
+public class ForbiddenException extends RuntimeException{
 	
 	private String message;
 

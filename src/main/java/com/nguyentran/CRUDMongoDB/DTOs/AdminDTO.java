@@ -2,14 +2,14 @@ package com.nguyentran.CRUDMongoDB.DTOs;
 
 import java.util.List;
 
-import com.nguyentran.CRUDMongoDB.entity.Admin;
+import org.bson.types.ObjectId;
 
 import lombok.Data;
 
 @Data
 public class AdminDTO {
 
-	private String _id;
+	private ObjectId id;
 	private String name;
 	private String username;
 	private List<String> roles;

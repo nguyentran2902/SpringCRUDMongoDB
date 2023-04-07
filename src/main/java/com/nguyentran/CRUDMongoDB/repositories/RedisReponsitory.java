@@ -13,13 +13,13 @@ public class RedisReponsitory {
 
 //	public static final String HASH_KEY_NAME = "TOKEN";
 	@Autowired
-	private RedisTemplate<String, HashMap<String, Object>> redisTemplate;
+	private RedisTemplate<String, HashMap<String, HashMap<String, Object>>> redisTemplate;
 
-	public void saveRefreshToken(String id,HashMap<String, Object> token) {	
+	public void saveToken(String id, HashMap<String, HashMap<String, Object>> token) {	
 		 redisTemplate.opsForValue().set(id, token, 3, TimeUnit.DAYS);
 		
 	}
-	public HashMap<String, Object> findItemById(String id) {		
+	public  HashMap<String, HashMap<String, Object>> findItemById(String id) {		
 		return redisTemplate.opsForValue().get(id);
 	}
 

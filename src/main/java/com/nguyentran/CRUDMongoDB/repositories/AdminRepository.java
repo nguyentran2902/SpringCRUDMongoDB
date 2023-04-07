@@ -14,8 +14,11 @@ import org.springframework.stereotype.Repository;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.InsertOneResult;
+import com.nguyentran.CRUDMongoDB.DTOs.AdminDTO;
+import com.nguyentran.CRUDMongoDB.DTOs.PersonDTO;
 import com.nguyentran.CRUDMongoDB.entity.Admin;
 import com.nguyentran.CRUDMongoDB.entity.Person;
 
@@ -57,6 +60,15 @@ public class AdminRepository {
 		
 		InsertOneResult ior = adminCollection.insertOne(admin);
 		return ior;
+	}
+
+	public List<AdminDTO> getAllPersons( int pageNo, int pageSize) {
+		List<Bson> pipeline = new ArrayList<Bson>();
+		List<AdminDTO> admins = new ArrayList<AdminDTO>();
+		pipeline.add(Aggregates.limit(pageSize));
+		pipeline.add(Aggregates.skip((pageNo - 1) * pageSize));
+		adminCollection.aggregate(pipeline, AdminDTO.class).into(admins);
+		return admins;
 	}
 
 }

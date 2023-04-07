@@ -17,13 +17,9 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
-		
-    	
+   	
     		 throw new AccessDeniedException("Access denied, your role is not allowed!!");
-    		 
-    	 
-      
-		
+	
 	}
 
 }
